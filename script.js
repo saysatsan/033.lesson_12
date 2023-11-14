@@ -176,52 +176,55 @@ class User {
 		const courseItem = document.createElement('div');
 		courseItem.classList.add('user__courses--course', role);
   
-		let courseText = '';
-  
-		if (role === 'admin') {
-		  courseText = `
-			<p>Title: <b>${course.title}</b></p>
-			<p>Admin's score: <span class="${grade(course.score)}">${grade(course.score)}</span></p>
-			<p>Lector: <b>${course.lector}</b></p>
-		  `
-		  ;
-		  coursesBlock.classList.add('admin--info');
-		} else if (role === 'lector') {
-		  courseText = `
-		  <p>Title: <b>${course.title}</b></p>
-		  <p>Lector's score: <span class="${grade(course.score)}">${grade(course.score)}</span></p>
-		  <p>Average student's score: <span class="${grade(course.studentsScore)}">${grade(course.studentsScore)}</span></p>
-		  `;
-		  coursesBlock.classList.add('admin--info');
-		} else {
-		  courseText = `
-		  <p>${course.title} <span class="${grade(course.mark)}">${grade(course.mark)}</span></p>
-		  `;
-		}
-  
+		let courseText = this.getCourseText(course, role);
+		  
 		courseItem.innerHTML = courseText;
 		coursesBlock.append(courseItem);
 	  });
-  
+
 	  userBlock.append(coursesBlock);
+	  
+	  return coursesBlock;
+	}
+
+	getCourseText(course){
+		return `<p>${course.title} <span class="${grade(course.mark)}">${grade(course.mark)}</span></p>`;
 	}
 }
   
 class Student extends User {
 	renderCourses(userBlock, courses, role) {
-	  super.renderCourses(userBlock, courses, role);
+	  super.renderCourses(userBlock, courses, role);	  
 	}
 }
   
 class Lector extends User {
 	renderCourses(userBlock, courses, role) {
-	  super.renderCourses(userBlock, courses, role);
+		const coursesBlock = super.renderCourses(userBlock, courses, role);;
+		coursesBlock.classList.add('admin--info');
 	}
-}
-  
+
+	getCourseText(course) {		
+		return `
+		  <p>Title: <b>${course.title}</b></p>
+		  <p>Lector's score: <span class="${grade(course.score)}">${grade(course.score)}</span></p>
+		  <p>Average student's score: <span class="${grade(course.studentsScore)}">${grade(course.studentsScore)}</span></p>
+		`;
+	}	
+}  
+
 class Admin extends User {
 	renderCourses(userBlock, courses, role) {
-	  super.renderCourses(userBlock, courses, role);
+		const coursesBlock = super.renderCourses(userBlock, courses, role);;
+		coursesBlock.classList.add('admin--info');
+	}	
+
+	getCourseText(course) {		
+		return `
+		  <p>Назва: <b>${course.title}</b></p>
+		  <p>Оцінка адміна: <span class="${grade(course.score)}">${grade(course.score)}</span></p>
+		  <p>Лектор: <b>${course.lector}</b></p>
+		`;
 	}
 }
   
@@ -229,6 +232,7 @@ const userContainer = document.querySelector('.users');
   
 users.forEach(userData => {
 	let user;
+
 	if (userData.role === 'student') {
 	  user = new Student(userData);
 	} else if (userData.role === 'lector') {
